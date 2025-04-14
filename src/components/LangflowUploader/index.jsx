@@ -81,36 +81,34 @@ export default function LangflowUploader() {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const toBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-    });
+  // const toBase64 = (file) =>
+  //   new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => resolve(reader.result);
+  //     reader.onerror = reject;
+  //   });
 
-    const extractTextFromPDF = async (file) => {
-      try {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        const numPages = pdf.numPages;
-        let fullText = "";
-    
-        for (let pageNum = 1; pageNum <= numPages; pageNum++) {
-          const page = await pdf.getPage(pageNum);
-          const content = await page.getTextContent();
-          const pageText = content.items.map((item) => item.str).join(" ");
-          fullText += `\n--- Page ${pageNum} ---\n${pageText}\n`;
-        }
-    
-        return fullText.trim();
-      } catch (err) {
-        console.error("PDF parsing failed:", err);
-        throw new Error("Failed to extract text from PDF.");
+  const extractTextFromPDF = async (file) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const numPages = pdf.numPages;
+      let fullText = "";
+
+      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const content = await page.getTextContent();
+        const pageText = content.items.map((item) => item.str).join(" ");
+        fullText += `\n--- Page ${pageNum} ---\n${pageText}\n`;
       }
-    };
-    
-    
+
+      return fullText.trim();
+    } catch (err) {
+      console.error("PDF parsing failed:", err);
+      throw new Error("Failed to extract text from PDF.");
+    }
+  };
 
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
@@ -125,7 +123,6 @@ export default function LangflowUploader() {
   //   } else {
   //     inputValue = text;
   //   }
-    
 
   //   try {
   //     const res = await fetch(
@@ -169,17 +166,17 @@ export default function LangflowUploader() {
     e.preventDefault();
     setLoading(true);
     setResult("");
-  
+
     let inputValue = "";
-  
+
     // Convert file to base64 if provided
     if (file) {
       const extractedText = await extractTextFromPDF(file);
-    inputValue = `Please summarize this text:\n${extractedText}`;
+      inputValue = `Please summarize this text:\n${extractedText}`;
     } else {
       inputValue = text;
     }
-  
+
     try {
       const res = await fetch(
         "https://langflow.bawana.com/api/v1/run/1553b53f-36d2-4e75-b593-a2b4d83c28d9?stream=false",
@@ -204,7 +201,7 @@ export default function LangflowUploader() {
           }),
         }
       );
-  
+
       const data = await res.json();
       const responseText =
         data?.outputs?.[0]?.outputs?.[0]?.artifacts?.message ||
@@ -218,8 +215,6 @@ export default function LangflowUploader() {
       setLoading(false);
     }
   };
-  
-  
 
   return (
     <Wrapper>
