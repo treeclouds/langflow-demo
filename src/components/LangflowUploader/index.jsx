@@ -178,29 +178,26 @@ export default function LangflowUploader() {
     }
 
     try {
-      const res = await fetch(
-        "https://langflow.bawana.com/api/v1/run/1553b53f-36d2-4e75-b593-a2b4d83c28d9?stream=false",
-        {
-          method: "POST",
-          headers: {
-            "x-api-key": "sk-cLerl7mG79V-BrjVZOW__0GSzIGi8eDIExZ5jNB0slY",
-            "Content-Type": "application/json",
+      const res = await fetch(process.env.REACT_APP_URL, {
+        method: "POST",
+        headers: {
+          "x-api-key": process.env.REACT_APP_LANGFLOW_API_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input_value: inputValue,
+          output_type: "chat",
+          input_type: "chat",
+          tweaks: {
+            "File-o3QkD": {},
+            "ParseData-yY0Ub": {},
+            "Prompt-1eccd": {},
+            "ChatInput-L83nO": {},
+            "OpenAIModel-ppjvf": {},
+            "ChatOutput-IwChK": {},
           },
-          body: JSON.stringify({
-            input_value: inputValue,
-            output_type: "chat",
-            input_type: "chat",
-            tweaks: {
-              "File-o3QkD": {},
-              "ParseData-yY0Ub": {},
-              "Prompt-1eccd": {},
-              "ChatInput-L83nO": {},
-              "OpenAIModel-ppjvf": {},
-              "ChatOutput-IwChK": {},
-            },
-          }),
-        }
-      );
+        }),
+      });
 
       const data = await res.json();
       const responseText =
