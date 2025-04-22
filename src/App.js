@@ -1,6 +1,7 @@
 import "./App.css";
-import Home from "./pages/Home";
+import { Admin, Home, UserChat } from "./pages";
 import React, { useRef, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 function App() {
   const chatRef = useRef(null);
 
@@ -12,7 +13,7 @@ function App() {
         "cb8db5f4-f987-4d99-88fc-0b9bae8bfd7e"
       );
       chatRef.current.setAttribute("host_url", "https://langflow.bawana.com");
-  
+
       const apiKey = process.env.REACT_APP_LANGFLOW_API_KEY;
       if (apiKey) {
         chatRef.current.setAttribute("api_key", apiKey);
@@ -23,10 +24,16 @@ function App() {
   }, []);
   return (
     <div className="App">
-      <Home />
       <div>
         <langflow-chat ref={chatRef}></langflow-chat>
       </div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/user" element={<UserChat />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
