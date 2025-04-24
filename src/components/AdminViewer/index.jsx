@@ -1,29 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { Wrapper, ChatBox, Bubble, Form, Input, Button } from './element';
-import socket from '../../socket'; // ✅ Make sure this path is correct
-
+import React, { useEffect, useState, useRef } from "react";
+import { Wrapper, ChatBox, Bubble, Form, Input, Button } from "./element";
+import socket from "../../socket";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 const AdminViewer = () => {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-
+  const [input, setInput] = useState("");
+  const chatEndRef = useRef(null); // 👈 Create a ref to scroll to
   useEffect(() => {
-    // ✅ Listen to messages from user
-    socket.on('chat-message', (msg) => {
-      setMessages((prev) => [...prev, msg]);
+    socket.on("chat-message", (msg) => {
+      // If no timestamp, generate one now
+      const withTimestamp = {
+        ...msg,
+        timestamp: msg.timestamp || new Date().toISOString(),
+      };
+
+      setMessages((prev) => [...prev, withTimestamp]);
     });
 
-    // ✅ Clean up on unmount
     return () => {
-      socket.off('chat-message');
+      socket.off("chat-message");
     };
   }, []);
+
+  // 👇 Scroll to bottom when messages update
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    // Only emit to backend
-    socket.emit("chat-message", { from: "admin", text: input });
+    const msg = {
+      from: "admin",
+      text: input,
+      timestamp: new Date().toISOString(), // 👈 add timestamp
+    };
+
+    socket.emit("chat-message", msg);
     setInput("");
   };
 
@@ -32,10 +50,62 @@ const AdminViewer = () => {
       <h2>Admin Viewer</h2>
       <ChatBox>
         {messages.map((msg, index) => (
-          <Bubble key={index} from={msg.from}>
-            <strong>{msg.from.toUpperCase()}:</strong> {msg.text}
+          <Bubble
+            key={index}
+            from={msg.from}
+            style={{ position: "relative", paddingBottom: "1.2rem" }}
+          >
+            <strong>{msg.from.toUpperCase()}</strong>
+
+            <ReactMarkdown
+              components={{
+                code({ node, inline, className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className || "");
+                  return !inline && match ? (
+                    <SyntaxHighlighter
+                      style={oneDark}
+                      language={match[1]}
+                      PreTag="div"
+                      customStyle={{
+                        borderRadius: "8px",
+                        padding: "12px",
+                        fontSize: "0.8rem",
+                        marginTop: "4px",
+                      }}
+                      {...props}
+                    >
+                      {String(children).replace(/\n$/, "")}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+            >
+              {msg.text}
+            </ReactMarkdown>
+
+            {msg.timestamp && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "4px",
+                  right: "8px",
+                  fontSize: "0.7rem",
+                  color: "#666",
+                }}
+              >
+                {new Date(msg.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
+            )}
           </Bubble>
         ))}
+        <div ref={chatEndRef} /> {/* 👈 Invisible div at the bottom */}
       </ChatBox>
       <Form onSubmit={handleSend}>
         <Input

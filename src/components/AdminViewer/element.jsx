@@ -19,14 +19,14 @@ export const ChatBox = styled.div`
 `;
 
 export const Bubble = styled.div`
-  align-self: ${({ from }) =>
-    from === 'user' ? 'flex-start' : from === 'ai' ? 'center' : 'flex-end'};
-  background: ${({ from }) =>
-    from === 'user' ? '#E1F5FE' : from === 'ai' ? '#EEE' : '#C8E6C9'};
+  align-self: ${({ from }) => (from === "user" ? "flex-start" : "flex-end")};
+  background: ${({ from }) => (from === "user" ? "#F1F1F1" : "#D6EAF8")};
+  text-align: left;
+
   padding: 0.6rem 1rem;
   border-radius: 18px;
   max-width: 70%;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 `;
 
 export const Form = styled.form`

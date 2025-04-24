@@ -1,15 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Wrapper, ChatBox, Bubble, Form, Input, Button } from './element';
-import socket from '../../socket'; // adjust the path if needed
+import React, { useState, useEffect, useRef } from "react";
+import { Wrapper, ChatBox, Bubble, Form, Input, Button } from "./element";
+import socket from "../../socket"; // adjust the path if needed
 import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 const ChatWindow = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const chatEndRef = useRef(null); // 👈 Create a ref to scroll to
 
   // Listen for incoming messages from socket
+
   useEffect(() => {
     socket.on("chat-message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
+      // If no timestamp, generate one now
+      const withTimestamp = {
+        ...msg,
+        timestamp: msg.timestamp || new Date().toISOString(),
+      };
+
+      setMessages((prev) => [...prev, withTimestamp]);
     });
 
     return () => {
@@ -17,23 +28,24 @@ const ChatWindow = () => {
     };
   }, []);
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (!input.trim()) return;
-
-  //   const msg = { from: 'user', text: input };
-  //   setMessages((prev) => [...prev, msg]); // display it immediately
-  //   socket.emit('chat-message', msg); // send to server
-  //   console.log("socket", socket)
-  //   setInput('');
-  // };
+  // 👇 Scroll to bottom when messages update
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    // Only emit to backend
-    socket.emit("chat-message", { from: "user", text: input });
+    const msg = {
+      from: "user",
+      text: input,
+      timestamp: new Date().toISOString(), // 👈 add timestamp
+    };
+
+    socket.emit("chat-message", msg);
     setInput("");
   };
 
@@ -41,10 +53,60 @@ const ChatWindow = () => {
     <Wrapper>
       <ChatBox>
         {messages.map((msg, index) => (
-          <Bubble key={index} isUser={msg.from === "user"}>
-            <ReactMarkdown>{msg.text}</ReactMarkdown>
+          <Bubble
+            key={index}
+            isUser={msg.from === "user"}
+            style={{ position: "relative", paddingBottom: "1.2rem" }}
+          >
+            <ReactMarkdown
+              components={{
+                code({ node, inline, className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className || "");
+                  return !inline && match ? (
+                    <SyntaxHighlighter
+                      style={oneDark}
+                      language={match[1]}
+                      PreTag="div"
+                      customStyle={{
+                        borderRadius: "8px",
+                        padding: "12px",
+                        fontSize: "0.8rem",
+                      }}
+                      {...props}
+                    >
+                      {String(children).replace(/\n$/, "")}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+            >
+              {msg.text}
+            </ReactMarkdown>
+
+            {msg?.timestamp && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "4px",
+                  right: "8px",
+                  fontSize: "0.7rem",
+                  color: "#666",
+                }}
+              >
+                {new Date(msg.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
+            )}
           </Bubble>
         ))}
+
+        <div ref={chatEndRef} />
       </ChatBox>
       <Form onSubmit={handleSubmit}>
         <Input
