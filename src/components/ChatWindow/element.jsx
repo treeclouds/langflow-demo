@@ -19,12 +19,13 @@ export const ChatBox = styled.div`
 `;
 
 export const Bubble = styled.div`
-  align-self: ${({ isUser }) => (isUser ? 'flex-end' : 'flex-start')};
-  background: ${({ isUser }) => (isUser ? '#DCF8C6' : '#fff')};
+  align-self: ${({ isUser }) => (isUser ? "flex-end" : "flex-start")};
+  background: ${({ isUser }) => (isUser ? "#DCF8C6" : "#fff")};
+  text-align: ${({ isUser }) => (isUser ? "right" : "left")};
   padding: 0.6rem 1rem;
   border-radius: 18px;
   max-width: 70%;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   word-wrap: break-word;
 `;
 

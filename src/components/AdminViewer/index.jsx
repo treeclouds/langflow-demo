@@ -22,10 +22,9 @@ const AdminViewer = () => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const adminMessage = { from: 'admin', text: input };
-    socket.emit('chat-message', adminMessage); // ✅ send to backend
-    setMessages((prev) => [...prev, adminMessage]);
-    setInput('');
+    // Only emit to backend
+    socket.emit("chat-message", { from: "admin", text: input });
+    setInput("");
   };
 
   return (
