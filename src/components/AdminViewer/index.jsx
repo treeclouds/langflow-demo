@@ -4,10 +4,15 @@ import socket from "../../socket";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Switch from "react-switch";
+
 const AdminViewer = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [isInterrupting, setIsInterrupting] = useState(false);
   const chatEndRef = useRef(null); // 👈 Create a ref to scroll to
+
+  // Listen for incoming messages
   useEffect(() => {
     socket.on("chat-message", (msg) => {
       // If no timestamp, generate one now
@@ -24,17 +29,19 @@ const AdminViewer = () => {
     };
   }, []);
 
-  // 👇 Scroll to bottom when messages update
+  // Scroll to bottom when messages update
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
+  // Handle sending admin messages
   const handleSend = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
+    // Send admin's message immediately when interrupting
     const msg = {
       from: "admin",
       text: input,
@@ -42,7 +49,39 @@ const AdminViewer = () => {
     };
 
     socket.emit("chat-message", msg);
-    setInput("");
+    setInput(""); // Clear input field
+
+    // If interrupt is on, stop the AI from responding
+    if (isInterrupting) {
+      console.log("Admin interrupting, AI response is disabled.");
+      return;
+    }
+
+    // If interrupt is off, let AI respond
+    socket.emit("ai-response", { text: input });
+  };
+
+  // Handle input changes (turn on interrupt when typing)
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+
+    if (!isInterrupting) {
+      setIsInterrupting(true); // Enable interrupt when admin starts typing
+
+      // Send an empty message to the server to interrupt any AI response
+      const msg = {
+        from: "admin",
+        text: "Let me check on that wait a  moment..",
+        timestamp: new Date().toISOString(),
+      };
+
+      socket.emit("chat-message", msg); // Send empty message to server
+    }
+  };
+
+  // Handle interrupt toggle
+  const handleInterruptToggle = () => {
+    setIsInterrupting((prev) => !prev); // Toggle the interrupt state
   };
 
   return (
@@ -112,8 +151,18 @@ const AdminViewer = () => {
           type="text"
           placeholder="Reply as Admin..."
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInputChange} // Use the new handleInputChange function
         />
+        <div>
+          <Switch
+            checked={isInterrupting}
+            onChange={handleInterruptToggle}
+            offColor="#888"
+            onColor="#0a0"
+            uncheckedIcon={false}
+            checkedIcon={false}
+          />
+        </div>
         <Button type="submit">Send</Button>
       </Form>
     </Wrapper>
