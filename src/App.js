@@ -1,5 +1,5 @@
 import "./App.css";
-import { Admin, Home, UserChat } from "./pages";
+import { Admin, Home, SummarizePDF, UserChat } from "./pages";
 import React, { useRef, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 function App() {
@@ -32,6 +32,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/user" element={<UserChat />} />
+          <Route path="/summarize-pdf" element={<SummarizePDF />} />
         </Routes>
       </Router>
     </div>

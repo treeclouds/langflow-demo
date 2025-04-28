@@ -50,15 +50,6 @@ const AdminViewer = () => {
 
     socket.emit("chat-message", msg);
     setInput(""); // Clear input field
-
-    // If interrupt is on, stop the AI from responding
-    if (isInterrupting) {
-      console.log("Admin interrupting, AI response is disabled.");
-      return;
-    }
-
-    // If interrupt is off, let AI respond
-    socket.emit("ai-response", { text: input });
   };
 
   // Handle input changes (turn on interrupt when typing)
@@ -66,22 +57,23 @@ const AdminViewer = () => {
     setInput(e.target.value);
 
     if (!isInterrupting) {
-      setIsInterrupting(true); // Enable interrupt when admin starts typing
+      setIsInterrupting(true);
 
-      // Send an empty message to the server to interrupt any AI response
-      const msg = {
-        from: "admin",
-        text: "Let me check on that wait a  moment..",
-        timestamp: new Date().toISOString(),
-      };
-
-      socket.emit("chat-message", msg); // Send empty message to server
+      socket.emit("admin-interrupt-toggle", {
+        isInterrupting: true,
+      });
     }
   };
 
   // Handle interrupt toggle
   const handleInterruptToggle = () => {
-    setIsInterrupting((prev) => !prev); // Toggle the interrupt state
+    const newInterruptState = !isInterrupting;
+    setIsInterrupting(newInterruptState);
+
+    // Notify server of the updated interrupt status
+    socket.emit("admin-interrupt-toggle", {
+      isInterrupting: newInterruptState,
+    });
   };
 
   return (
