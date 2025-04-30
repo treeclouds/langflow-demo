@@ -4,14 +4,14 @@ import socket from "../../socket"; // adjust the path if needed
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useParams } from "react-router-dom";
 
 const ChatWindow = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const chatEndRef = useRef(null); // 👈 Create a ref to scroll to
-
   // Listen for incoming messages from socket
-
+  const { id } = useParams();
   useEffect(() => {
     socket.on("chat-message", (msg) => {
       // If no timestamp, generate one now
@@ -42,9 +42,9 @@ const ChatWindow = () => {
     const msg = {
       from: "user",
       text: input,
+      roomId: id,
       timestamp: new Date().toISOString(), // 👈 add timestamp
     };
-
     socket.emit("chat-message", msg);
     setInput("");
   };

@@ -47,13 +47,28 @@ export default function Home() {
     navigate(page);
   };
 
+  const generateRandomString = () => {
+    let randomString;
+
+    const randomNumber = Math.floor(Math.random() * 1000); // Random 3-digit number
+    const randomWord = Math.random().toString(36).substring(2, 6); // Random 4 characters
+    randomString = `${randomNumber}${randomWord}`;
+
+    return `/user/${randomString}`;
+  };
+
+  const navigateToRandomUser = () => {
+    const path = generateRandomString();
+    navigateToPage(path); // Assuming navigateToPage is a function to handle navigation
+  };
+
   return (
     <main>
       <IconWrapper>
         <Icon onClick={() => navigateToPage("/summarize-pdf")}>
           <p>Summarize PDF</p>
         </Icon>
-        <Icon onClick={() => navigateToPage("/user")}>
+        <Icon onClick={navigateToRandomUser}>
           <p>User Page</p>
         </Icon>
         <Icon onClick={() => navigateToPage("/admin")}>

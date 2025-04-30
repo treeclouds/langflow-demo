@@ -48,3 +48,37 @@ export const Button = styled.button`
   color: white;
   border: none;
 `;
+
+
+export const Layout = styled.div`
+  display: flex;
+  height: 100vh;
+`;
+
+export const Sidebar = styled.div`
+  width: 250px;
+  border-right: 1px solid #ddd;
+  padding: 1rem;
+  overflow-y: auto;
+  background-color: #f7f7f7;
+`;
+
+export const RoomItem = styled.div`
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  border-radius: 6px;
+  background-color: ${({ active }) => (active ? "#e0f7fa" : "transparent")};
+  font-weight: ${({ active }) => (active ? "bold" : "normal")};
+
+  &:hover {
+    background-color: #e0f7fa;
+  }
+`;
+
+export const MainContent = styled.div`
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+`;

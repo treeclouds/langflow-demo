@@ -31,7 +31,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/user" element={<UserChat />} />
+          <Route path="/user/:id" element={<UserChat />} />
           <Route path="/summarize-pdf" element={<SummarizePDF />} />
         </Routes>
       </Router>
