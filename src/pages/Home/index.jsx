@@ -1,80 +1,55 @@
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  ShortcutButtons,
+  ShortcutCard,
+  SectionWrapper,
+  CardContainer,
+  StyledInput,
+  StyledButton,
+} from "./element"; // adjust path as needed
 
-// Mandiri Bank's color base (blue)
-const mandiriBlue = "#003b5c";
+const HomePage = () => {
+  const [userIdentifier, setUserIdentifier] = useState("");
 
-const IconWrapper = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  gap: 2rem;
-  padding: 5%;
-`;
-
-const Icon = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  background-color: ${mandiriBlue};
-  border-radius: 20px;
-  width: 150px;
-  height: 100px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  font-weight: 600;
-  font-size: 16px;
-
-  &:hover {
-    background-color: #006f87;
-    transform: scale(1.05);
-  }
-
-  p {
-    margin: 0;
-    font-size: 16px;
-    color: white;
-  }
-`;
-
-export default function Home() {
-  const navigate = useNavigate();
-
-  const navigateToPage = (page) => {
-    navigate(page);
+  const goToUserPage = () => {
+    // Open the user page in a new tab
+    window.open(`/user/${encodeURIComponent(userIdentifier.trim())}`, "_blank");
   };
 
-  const generateRandomString = () => {
-    let randomString;
-
-    const randomNumber = Math.floor(Math.random() * 1000); // Random 3-digit number
-    const randomWord = Math.random().toString(36).substring(2, 6); // Random 4 characters
-    randomString = `${randomNumber}${randomWord}`;
-
-    return `/user/${randomString}`;
-  };
-
-  const navigateToRandomUser = () => {
-    const path = generateRandomString();
-    navigateToPage(path); // Assuming navigateToPage is a function to handle navigation
+  const openAdminPage = () => {
+    // Open the admin page in a new tab
+    window.open("/admin", "_blank");
   };
 
   return (
-    <main>
-      <IconWrapper>
-        <Icon onClick={() => navigateToPage("/summarize-pdf")}>
+    <>
+      <ShortcutButtons>
+        <ShortcutCard onClick={() => window.open("/summarize-pdf", "_blank")}>
           <p>Summarize PDF</p>
-        </Icon>
-        <Icon onClick={navigateToRandomUser}>
-          <p>User Page</p>
-        </Icon>
-        <Icon onClick={() => navigateToPage("/admin")}>
+        </ShortcutCard>
+
+        <ShortcutCard onClick={openAdminPage}>
           <p>Admin Page</p>
-        </Icon>
-      </IconWrapper>
-    </main>
+        </ShortcutCard>
+        <CardContainer>
+          <StyledInput
+            type="text"
+            placeholder="Enter name or email"
+            value={userIdentifier}
+            onChange={(e) => setUserIdentifier(e.target.value)}
+          />
+          <StyledButton
+            onClick={goToUserPage}
+            disabled={!userIdentifier.trim()}
+          >
+            User Page
+          </StyledButton>
+        </CardContainer>
+      </ShortcutButtons>
+
+      <SectionWrapper></SectionWrapper>
+    </>
   );
-}
+};
+
+export default HomePage;
