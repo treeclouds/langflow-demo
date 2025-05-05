@@ -5,12 +5,14 @@ import ReactMarkdown from "react-markdown";
 import { RoomSummaryContainer, Button, MarkdownContainer } from "./element";
 
 function RoomSummary({ roomId }) {
-  const [summary, setSummary] = useState("");
-  const [loading, setLoading] = useState(false);
-  const handleSummarize = () => {
-    setLoading(true);
-    socket.emit("summarize-room", roomId);
-  };
+ 
+    const [summary, setSummary] = useState("");
+    const [loading, setLoading] = useState(false);
+    const handleSummarize = () => {
+      if (!roomId) return;
+      setLoading(true);
+      socket.emit("summarize-room", roomId);
+    };
 
   useEffect(() => {
     setSummary("");

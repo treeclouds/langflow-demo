@@ -265,9 +265,11 @@ const AdminViewer = () => {
           </Button>
         </Form>
       </MainContent>
-      <div style={{ padding: "1rem", width: "40%" }}>
-        <RoomSummary roomId={selectedRoom} />
-      </div>
+      {selectedRoom ? (
+        <div style={{ padding: "1rem", width: "40%" }}>
+          <RoomSummary roomId={selectedRoom} />
+        </div>
+      ) : null}
     </Layout>
   );
 };
