@@ -16,16 +16,17 @@ import {
   Input,
   Button,
 } from "./element";
+import RoomSummary from "./summary";
 
 const AdminViewer = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [isInterrupting, setIsInterrupting] = useState(false);
-  const [emotion, setEmotion] = useState("");
   const [rooms, setRooms] = useState([]); // 🆕 Available rooms
   const [selectedRoom, setSelectedRoom] = useState(""); // 🆕 Selected room
+  const [interruptState, setInterruptState] = useState({}); // 🆕 Track interrupt state per room
   const chatEndRef = useRef(null);
   const [prevRoom, setPrevRoom] = useState(null);
+
   // 🆕 Request room list on mount
   useEffect(() => {
     socket.on("room-list", (roomList) => {
@@ -38,6 +39,7 @@ const AdminViewer = () => {
       socket.off("room-list");
     };
   }, []);
+
   // Join selected room and listen for chat messages
   useEffect(() => {
     if (!selectedRoom) return;
@@ -56,9 +58,7 @@ const AdminViewer = () => {
           ...msg,
           timestamp: msg.timestamp || new Date().toISOString(),
         };
-        if (msg.from === "ai" && msg.emotion) {
-          setEmotion(msg.emotion);
-        }
+
         setMessages((prev) => [...prev, withTimestamp]);
       }
     };
@@ -108,24 +108,29 @@ const AdminViewer = () => {
   const handleInputChange = (e) => {
     setInput(e.target.value);
 
-    if (!isInterrupting) {
-      setIsInterrupting(true);
+    if (!interruptState[selectedRoom]) {
+      const updatedState = { ...interruptState, [selectedRoom]: true };
+      setInterruptState(updatedState);
       socket.emit("admin-interrupt-toggle", {
+        roomId: selectedRoom,
         isInterrupting: true,
       });
     }
   };
 
   const handleInterruptToggle = () => {
-    const newState = !isInterrupting;
-    setIsInterrupting(newState);
+    const newState = !interruptState[selectedRoom];
+    const updatedState = { ...interruptState, [selectedRoom]: newState };
+    setInterruptState(updatedState);
+
     socket.emit("admin-interrupt-toggle", {
+      roomId: selectedRoom,
       isInterrupting: newState,
     });
   };
 
   const getEmotionEmoji = (emotion) => {
-    switch (emotion.toLowerCase()) {
+    switch (emotion?.toLowerCase()) {
       case "happy":
         return "😊";
       case "sad":
@@ -147,6 +152,11 @@ const AdminViewer = () => {
     }
   };
 
+  const latestAiMessage = messages
+    ?.filter((message) => message.from === "ai" && message.emotion) // Filter AI messages with emotion
+    ?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+  const latestEmotion = latestAiMessage?.emotion || "No emotion found";
+
   return (
     <Layout>
       {/* Sidebar Room List */}
@@ -160,7 +170,7 @@ const AdminViewer = () => {
               key={room}
               active={room === selectedRoom}
               onClick={() => {
-                setMessages([]);
+                setMessages([]); // Clear messages when changing rooms
                 setSelectedRoom(room);
               }}
             >
@@ -230,7 +240,7 @@ const AdminViewer = () => {
           <div ref={chatEndRef} />
         </ChatBox>
         <span style={{ marginLeft: "10px", fontSize: "1rem", color: "#888" }}>
-          User's Emotion: {emotion || "Unknown"} {getEmotionEmoji(emotion)}
+          User's Emotion: {latestEmotion} {getEmotionEmoji(latestEmotion)}
         </span>
         <Form onSubmit={handleSend}>
           <Input
@@ -242,7 +252,7 @@ const AdminViewer = () => {
           />
           <div>
             <Switch
-              checked={isInterrupting}
+              checked={interruptState[selectedRoom] || false}
               onChange={handleInterruptToggle}
               offColor="#888"
               onColor="#0a0"
@@ -255,6 +265,9 @@ const AdminViewer = () => {
           </Button>
         </Form>
       </MainContent>
+      <div style={{ padding: "1rem", width: "40%" }}>
+        <RoomSummary roomId={selectedRoom} />
+      </div>
     </Layout>
   );
 };

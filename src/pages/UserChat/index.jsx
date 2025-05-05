@@ -3,8 +3,7 @@ import {ChatWindow} from '../../components';
 
 const UserChat = () => {
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>User Chat</h2>
+    <div style={{ padding: "2rem" }}>
       <ChatWindow />
     </div>
   );

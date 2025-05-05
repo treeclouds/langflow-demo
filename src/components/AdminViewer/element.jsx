@@ -82,3 +82,16 @@ export const MainContent = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
+export const RoomSummaryContainer = styled.div`
+  padding: 1rem;
+`;
+
+export const MarkdownContainer = styled.div`
+  margin-top: 20px;
+  text-align: left;
+  height: 20rem;
+  overflow-y: auto;
+  background-color: #f7f7f7;
+  padding: 5%;
+`;
