@@ -42,6 +42,7 @@ const ChatWindow = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
+    setAiTyping(true);
 
     const msg = {
       from: "user",
