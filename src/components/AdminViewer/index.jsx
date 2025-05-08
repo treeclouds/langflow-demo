@@ -15,6 +15,8 @@ import {
   Form,
   Input,
   Button,
+  RightPanel,
+  EmotionStatus,
 } from "./element";
 import RoomSummary from "./summary";
 
@@ -223,10 +225,10 @@ const AdminViewer = () => {
                 <div
                   style={{
                     position: "absolute",
-                    bottom: "4px",
-                    right: "8px",
+                    bottom: "-1.1rem",
+                    right: "0.5rem",
                     fontSize: "0.7rem",
-                    color: "#666",
+                    color: "#999",
                   }}
                 >
                   {new Date(msg.timestamp).toLocaleTimeString([], {
@@ -239,9 +241,7 @@ const AdminViewer = () => {
           ))}
           <div ref={chatEndRef} />
         </ChatBox>
-        <span style={{ marginLeft: "10px", fontSize: "1rem", color: "#888" }}>
-          User's Emotion: {latestEmotion} {getEmotionEmoji(latestEmotion)}
-        </span>
+
         <Form onSubmit={handleSend}>
           <Input
             type="text"
@@ -265,11 +265,15 @@ const AdminViewer = () => {
           </Button>
         </Form>
       </MainContent>
-      {selectedRoom ? (
-        <div style={{ padding: "1rem", width: "40%" }}>
-          <RoomSummary roomId={selectedRoom} />
-        </div>
-      ) : null}
+
+      <RightPanel>
+        <RoomSummary roomId={selectedRoom} />
+        <EmotionStatus>
+          <span style={{ fontWeight: 500 }}>User Emotion:</span>
+          <span>{latestEmotion}</span>
+          <span>{getEmotionEmoji(latestEmotion)}</span>
+        </EmotionStatus>
+      </RightPanel>
     </Layout>
   );
 };

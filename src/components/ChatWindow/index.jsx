@@ -54,7 +54,7 @@ const ChatWindow = () => {
 
   const displayMessages = useMemo(() => {
     const typingMsg = aiTyping
-      ? [{ from: "ai", text: "*typing...*", temp: true }]
+      ? [{ from: "ai", text: "*Waiting for respond*", temp: true }]
       : [];
     return [...messages, ...typingMsg];
   }, [messages, aiTyping]);
@@ -99,10 +99,10 @@ const ChatWindow = () => {
         <div
           style={{
             position: "absolute",
-            bottom: "4px",
-            right: "8px",
+            bottom: "-1.1rem",
+            right: "0.5rem",
             fontSize: "0.7rem",
-            color: "#666",
+            color: "#999",
           }}
         >
           {new Date(msg.timestamp).toLocaleTimeString([], {
