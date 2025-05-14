@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import {
   PageWrapper,
   ShortcutWrapper,
-  ShortcutButtons,
   ShortcutCard,
   CardContainer,
   StyledInput,
   StyledButton,
-} from "./element"; // adjust path if needed
+  Section,
+  SectionTitle,
+} from "./element";
 
 const HomePage = () => {
   const [userIdentifier, setUserIdentifier] = useState("");
 
   const goToUserPage = () => {
+    if (!userIdentifier.trim()) return;
     window.open(`/user/${encodeURIComponent(userIdentifier.trim())}`, "_blank");
   };
 
@@ -20,33 +22,43 @@ const HomePage = () => {
     window.open("/admin", "_blank");
   };
 
+  const openSummaryPage = () => {
+    window.open("/summarize-pdf", "_blank");
+  };
+
   return (
     <PageWrapper>
       <ShortcutWrapper>
-        <ShortcutButtons>
-          <ShortcutCard onClick={() => window.open("/summarize-pdf", "_blank")}>
-            <p>Summarize PDF</p>
-          </ShortcutCard>
+        <Section>
+          <SectionTitle>📄 Document Tools</SectionTitle>
+          <ShortcutCard onClick={openSummaryPage}>Summarize PDF</ShortcutCard>
+        </Section>
 
-          <ShortcutCard onClick={openAdminPage}>
-            <p>Admin Page</p>
-          </ShortcutCard>
-        </ShortcutButtons>
+        <Section>
+          <SectionTitle>🛠️ Admin Tools</SectionTitle>
+          <ShortcutCard onClick={openAdminPage}>Go to Admin Page</ShortcutCard>
+        </Section>
 
-        <CardContainer>
-          <StyledInput
-            type="text"
-            placeholder="Enter name or email"
-            value={userIdentifier}
-            onChange={(e) => setUserIdentifier(e.target.value)}
-          />
-          <StyledButton
-            onClick={goToUserPage}
-            disabled={!userIdentifier.trim()}
-          >
-            User Page
-          </StyledButton>
-        </CardContainer>
+        <Section>
+          <SectionTitle>🔍 User Page Lookup</SectionTitle>
+          <CardContainer>
+            <StyledInput
+              type="text"
+              placeholder="Enter name or email"
+              value={userIdentifier}
+              onChange={(e) => setUserIdentifier(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") goToUserPage();
+              }}
+            />
+            <StyledButton
+              onClick={goToUserPage}
+              disabled={!userIdentifier.trim()}
+            >
+              Go
+            </StyledButton>
+          </CardContainer>
+        </Section>
       </ShortcutWrapper>
     </PageWrapper>
   );

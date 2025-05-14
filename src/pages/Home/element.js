@@ -108,3 +108,17 @@ export const StyledButton = styled.button`
     cursor: not-allowed;
   }
 `;
+
+export const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+export const SectionTitle = styled.h2`
+  font-size: 1.2rem;
+  color: ${mandiriBlue};
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-align: left;
+`;
