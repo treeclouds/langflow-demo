@@ -3,17 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   LoginWrapper,
   LoginCard,
-  LoginLogo,
   LoginTitle,
   LoginForm,
   FormGroup,
-FormLabel,
+  FormLabel,
   LoginInput,
   LoginButton,
-  LoginFooter,
-
-
-
 } from "./element";
 
 const LoginPage = () => {
@@ -23,13 +18,13 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username === "admin" && password === "P@ssw0rd123") {
-      localStorage.setItem("token", "your-auth-token");
+    if (username === "wculmen" && password === "P@ssw0rd123") {
+      localStorage.setItem("token", "random-token");
       const from = location.state?.from?.pathname || "/home";
       navigate(from, { replace: true });
     } else {
@@ -40,10 +35,8 @@ const LoginPage = () => {
   return (
     <LoginWrapper>
       <LoginCard>
-    
-        
         <LoginTitle>Sign In to Your Account</LoginTitle>
-        
+
         <LoginForm onSubmit={handleSubmit}>
           <FormGroup>
             <FormLabel>Username</FormLabel>
@@ -56,7 +49,7 @@ const LoginPage = () => {
               required
             />
           </FormGroup>
-          
+
           <FormGroup>
             <FormLabel>Password</FormLabel>
             <LoginInput
@@ -67,16 +60,11 @@ const LoginPage = () => {
               required
             />
           </FormGroup>
-          
-          <LoginButton 
-            type="submit" 
-            disabled={!username || !password}
-          >
+
+          <LoginButton type="submit" disabled={!username || !password}>
             Sign In
           </LoginButton>
         </LoginForm>
-        
-      
       </LoginCard>
     </LoginWrapper>
   );
