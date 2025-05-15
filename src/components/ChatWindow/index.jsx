@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useParams } from "react-router-dom";
-
+import { SpinnerRoundFilled } from "spinners-react";
 const ChatWindow = () => {
   const [input, setInput] = useState("");
   const [aiTyping, setAiTyping] = useState(false);
@@ -127,8 +127,11 @@ const ChatWindow = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
+          disabled={aiTyping}
         />
-        <Button type="submit">Send</Button>
+        <Button type="submit" disabled={aiTyping}>
+          {aiTyping ? <SpinnerRoundFilled size={20} color="#ffffff" /> : "Send"}
+        </Button>
       </Form>
     </Wrapper>
   );

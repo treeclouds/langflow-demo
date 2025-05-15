@@ -30,17 +30,17 @@ const HomePage = () => {
     <PageWrapper>
       <ShortcutWrapper>
         <Section>
-          <SectionTitle>📄 Document Tools</SectionTitle>
+          <SectionTitle>Document Summary Tools</SectionTitle>
           <ShortcutCard onClick={openSummaryPage}>Summarize PDF</ShortcutCard>
         </Section>
 
         <Section>
-          <SectionTitle>🛠️ Admin Tools</SectionTitle>
+          <SectionTitle>Admin Page</SectionTitle>
           <ShortcutCard onClick={openAdminPage}>Go to Admin Page</ShortcutCard>
         </Section>
 
         <Section>
-          <SectionTitle>🔍 User Page Lookup</SectionTitle>
+          <SectionTitle>User Chat</SectionTitle>
           <CardContainer>
             <StyledInput
               type="text"
