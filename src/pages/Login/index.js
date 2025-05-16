@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { validCredentials } from "../../authConfig";
 import {
   LoginWrapper,
   LoginCard,
@@ -9,13 +11,16 @@ import {
   FormLabel,
   LoginInput,
   LoginButton,
-} from "./element";
+  PasswordWrapper,
+  ToggleIcon,
+} from "./element"; // make sure to add new styled-components
 
 const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     localStorage.removeItem("token");
@@ -23,7 +28,10 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username === "wculmen" && password === "P@ssw0rd123") {
+    if (
+      username === validCredentials.username &&
+      password === validCredentials.password
+    ) {
       localStorage.setItem("token", "random-token");
       const from = location.state?.from?.pathname || "/home";
       navigate(from, { replace: true });
@@ -52,13 +60,18 @@ const LoginPage = () => {
 
           <FormGroup>
             <FormLabel>Password</FormLabel>
-            <LoginInput
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <PasswordWrapper>
+              <LoginInput
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <ToggleIcon onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </ToggleIcon>
+            </PasswordWrapper>
           </FormGroup>
 
           <LoginButton type="submit" disabled={!username || !password}>

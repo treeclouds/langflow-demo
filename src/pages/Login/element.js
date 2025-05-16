@@ -108,3 +108,17 @@ export const LoginFooter = styled.div`
   font-size: 0.85rem;
   color: #666;
 `;
+
+export const PasswordWrapper = styled.div`
+  position: relative;
+`;
+
+export const ToggleIcon = styled.div`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  font-size: 1rem;
+`;
