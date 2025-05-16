@@ -1,0 +1,17 @@
+{
+  "Moko": [
+    {
+      "from": "user",
+      "text": "hello tell me a weather in new york city",
+      "roomId": "Moko",
+      "timestamp": "2025-05-16T04:48:08.339Z"
+    },
+    {
+      "from": "ai",
+      "text": "I currently don't have real-time access to weather data. However, you can easily check the current weather in New York City by using weather websites or apps like:\n\n- **Weather.com** (The Weather Channel)\n\n- **AccuWeather**\n\n- **BBC Weather**\n\n- **Google Weather** (just search \"New York City weather\")\n\nThese sources will provide you with up-to-date information on temperature, precipitation, and forecasts. If you have any other questions or need assistance, feel free to ask!",
+      "emotion": "Neutral",
+      "roomId": "Moko",
+      "timestamp": "2025-05-16T04:48:16.526Z"
+    }
+  ]
+}
