@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { Admin, Home, SummarizePDF, UserChat, LoginPage } from "./pages";
+import { Admin, Home, SummarizePDF, UserChat, LoginPage, Register } from "./pages";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
@@ -14,6 +14,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Register />} />
 
           {/* Protected Routes Group */}
           <Route element={<ProtectedRoute />}>
@@ -25,7 +26,7 @@ function App() {
 
           {/* Redirects */}
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/register" replace />} />
         </Routes>
       </Router>
     </div>

@@ -4,6 +4,81 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const axios = require("axios");
 const { loadChatHistory, saveChatHistory } = require("./storage");
+const app = express();
+const db = require("./db");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+app.use(cors({
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+  credentials: true,
+  methods: ["GET", "POST"]
+}));
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+
+  const existingUser = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+  if (existingUser) {
+    return res.status(400).json({ message: "Username already taken!" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  db.prepare("INSERT INTO users (username, password) VALUES (?, ?)").run(username, hashedPassword);
+
+  res.json({ message: "✅ Registered successfully!" });
+});
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+  if (!user) {
+    return res.status(401).json({ message: "❌ User not found" });
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    return res.status(401).json({ message: "❌ Invalid password" });
+  }
+
+  const token = jwt.sign({ username: user.username }, "your_secret_key", { expiresIn: "1h" });
+  res.cookie("token_user_key", token, {
+    httpOnly: true,
+    secure: false
+  });
+
+  res.json({ message: "✅ Login successful!" });
+});
+app.get("/me", (req, res) => {
+  const token = req.cookies.token_user_key;
+  if (!token) return res.status(401).json({ message: "Not logged in" });
+
+  try {
+    const user = jwt.verify(token, "your_secret_key");
+    res.json({ message: `You are logged in as ${user.username}` });
+  }catch (err) {
+  if (err.name === "TokenExpiredError") {
+    return res.status(401).json({ message: "Session expired, please login again." });
+  }
+  return res.status(401).json({ message: "Invalid token" });
+}
+});
+app.post("/logout", (req, res) => {
+  res.clearCookie("token_user_key");
+  res.json({ message: "✅ Logged out successfully!" });
+});
+app.get("/users", (req, res) => {
+  try {
+    const users = db.prepare("SELECT username FROM users").all();
+    res.json(users);
+  } catch (err) {
+    console.error("❌ Error fetching users:", err.message);
+    res.status(500).json({ message: "Error fetching users" });
+  }
+});
 
 require("dotenv").config();
 
@@ -13,18 +88,14 @@ if (!process.env.LANGFLOW_URL || !process.env.LANGFLOW_API_KEY || !process.env.L
   process.exit(1);
 }
 
-const app = express();
 
-app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
-  methods: ["GET", "POST"]
-}));
 
 let chatHistory = loadChatHistory();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+    credentials: true, // ✅ here too!
     methods: ["GET", "POST"]
   }
 });

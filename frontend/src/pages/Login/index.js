@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { validCredentials } from "../../authConfig";
 import {
@@ -77,6 +77,8 @@ const LoginPage = () => {
           <LoginButton type="submit" disabled={!username || !password}>
             Sign In
           </LoginButton>
+
+          Don't have an account? <Link to="/register">Register</Link>
         </LoginForm>
       </LoginCard>
     </LoginWrapper>
