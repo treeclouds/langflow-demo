@@ -9,6 +9,9 @@ const db = require("./db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+
+const SECRET_KEY = process.env.JWT_SECRET || "default_fallback_secret";
+
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
   credentials: true,
@@ -44,30 +47,40 @@ app.post("/login", async (req, res) => {
     return res.status(401).json({ message: "❌ Invalid password" });
   }
 
-  const token = jwt.sign({ username: user.username }, "your_secret_key", { expiresIn: "1h" });
+  const token = jwt.sign({ username: user.username }, SECRET_KEY, { expiresIn: "1h" });
+
+  // Optional: set cookie
   res.cookie("token_user_key", token, {
     httpOnly: true,
-    secure: false
+    secure: false,
   });
 
-  res.json({ message: "✅ Login successful!" });
+  // ✅ Send token in response for frontend
+  res.json({ message: "✅ Login successful!", token });
 });
+
 app.get("/me", (req, res) => {
-  const token = req.cookies.token_user_key;
-  if (!token) return res.status(401).json({ message: "Not logged in" });
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1]; // Extract after "Bearer "
+
+  if (!token) {
+    return res.status(401).json({ message: "Not logged in" });
+  }
 
   try {
-    const user = jwt.verify(token, "your_secret_key");
-    res.json({ message: `You are logged in as ${user.username}` });
-  }catch (err) {
-  if (err.name === "TokenExpiredError") {
-    return res.status(401).json({ message: "Session expired, please login again." });
+    const user = jwt.verify(token, SECRET_KEY);
+    res.json({ username: user.username });
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Session expired, please login again." });
+    }
+    return res.status(401).json({ message: "Invalid token" });
   }
-  return res.status(401).json({ message: "Invalid token" });
-}
 });
+
+
 app.post("/logout", (req, res) => {
-  res.clearCookie("token_user_key");
+  res.clearCookie("token");
   res.json({ message: "✅ Logged out successfully!" });
 });
 app.get("/users", (req, res) => {
