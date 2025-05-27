@@ -4,12 +4,31 @@ import {
   ShortcutWrapper,
   ShortcutCard,
   CardContainer,
-
   Section,
   SectionTitle,
+  LogoutWrapper,
 } from "./element";
+import axios from "axios";
 
 const HomePage = () => {
+  const logout = async () => {
+    try {
+      await axios.post(
+        "/logout",
+        {},
+        {
+          withCredentials: true, // ensures cookies are sent
+        }
+      );
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      localStorage.removeItem("personal_data");
+      localStorage.removeItem("token");
+      window.location.href = "/login"; // redirect to login page
+    }
+  };
+
   const userInfo = localStorage.getItem("personal_data");
   const goToUserPage = () => {
     if (!userInfo.trim()) return;
@@ -26,6 +45,10 @@ const HomePage = () => {
 
   return (
     <PageWrapper>
+      <LogoutWrapper>
+        <ShortcutCard onClick={logout}>Logout</ShortcutCard>
+      </LogoutWrapper>
+
       <ShortcutWrapper>
         <Section>
           <SectionTitle>Document Summary Tools</SectionTitle>
@@ -40,9 +63,7 @@ const HomePage = () => {
         <Section>
           <SectionTitle>User Chat</SectionTitle>
           <CardContainer>
-        
-          
-              <ShortcutCard onClick={goToUserPage}>Go to User Page</ShortcutCard>
+            <ShortcutCard onClick={goToUserPage}>Go to User Page</ShortcutCard>
           </CardContainer>
         </Section>
       </ShortcutWrapper>

@@ -122,3 +122,9 @@ export const SectionTitle = styled.h2`
   margin-bottom: 0.5rem;
   text-align: left;
 `;
+export const LogoutWrapper = styled.div`
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+`;
