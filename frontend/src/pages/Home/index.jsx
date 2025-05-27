@@ -1,21 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   PageWrapper,
   ShortcutWrapper,
   ShortcutCard,
   CardContainer,
-  StyledInput,
-  StyledButton,
+
   Section,
   SectionTitle,
 } from "./element";
 
 const HomePage = () => {
-  const [userIdentifier, setUserIdentifier] = useState("");
-
+  const userInfo = localStorage.getItem("personal_data");
   const goToUserPage = () => {
-    if (!userIdentifier.trim()) return;
-    window.open(`/user/${encodeURIComponent(userIdentifier.trim())}`, "_blank");
+    if (!userInfo.trim()) return;
+    window.open(`/user/${encodeURIComponent(userInfo.trim())}`, "_blank");
   };
 
   const openAdminPage = () => {
@@ -42,21 +40,9 @@ const HomePage = () => {
         <Section>
           <SectionTitle>User Chat</SectionTitle>
           <CardContainer>
-            <StyledInput
-              type="text"
-              placeholder="Enter name or email"
-              value={userIdentifier}
-              onChange={(e) => setUserIdentifier(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") goToUserPage();
-              }}
-            />
-            <StyledButton
-              onClick={goToUserPage}
-              disabled={!userIdentifier.trim()}
-            >
-              Go
-            </StyledButton>
+        
+          
+              <ShortcutCard onClick={goToUserPage}>Go to User Page</ShortcutCard>
           </CardContainer>
         </Section>
       </ShortcutWrapper>

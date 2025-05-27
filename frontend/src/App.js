@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { Admin, Home, SummarizePDF, UserChat, LoginPage, Register } from "./pages";
+import { Admin, Home, SummarizePDF, UserChat, LoginPage, Register, Forbidden } from "./pages";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
@@ -15,6 +15,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forbidden" element={<Forbidden />} />
 
           {/* Protected Routes Group */}
           <Route element={<ProtectedRoute />}>
