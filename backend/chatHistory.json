@@ -1,0 +1,17 @@
+{
+  "tester2": [
+    {
+      "from": "user",
+      "text": "good morning",
+      "roomId": "tester2",
+      "timestamp": "2025-05-28T07:15:06.400Z"
+    },
+    {
+      "from": "ai",
+      "text": "Good morning! How can I assist you today?",
+      "emotion": "Happy",
+      "roomId": "tester2",
+      "timestamp": "2025-05-28T07:15:12.657Z"
+    }
+  ]
+}

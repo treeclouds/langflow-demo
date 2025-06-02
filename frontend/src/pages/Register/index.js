@@ -14,43 +14,51 @@ import {
   ToggleIcon,
 } from "./element";
 import axios from "axios";
+
 const RegisterPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
-  const { username, password } = formData;
+  const { username, password, confirmPassword } = formData;
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await axios.post(
-      "http://localhost:4000/register",
-      {
-        username: formData.username,
-        password: formData.password,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    navigate("/login");
-  } catch (error) {
-    if (error.response) {
-      alert(error.response.data.message);
-    } else {
-      alert("Registration failed. Please try again.");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
     }
-  }
-};
 
+    try {
+      await axios.post(
+        "http://localhost:4000/register",
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      navigate("/login");
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data.message);
+      } else {
+        alert("Registration failed. Please try again.");
+      }
+    }
+  };
 
   return (
     <RegisterWrapper>
@@ -70,8 +78,6 @@ const handleSubmit = async (e) => {
             />
           </FormGroup>
 
-     
-
           <FormGroup>
             <FormLabel>Password</FormLabel>
             <PasswordWrapper>
@@ -89,7 +95,31 @@ const handleSubmit = async (e) => {
             </PasswordWrapper>
           </FormGroup>
 
-          <RegisterButton type="submit" disabled={!username  || !password}>
+          <FormGroup>
+            <FormLabel>Confirm Password</FormLabel>
+            <PasswordWrapper>
+              <RegisterInput
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={handleChange}
+                required
+              />
+              <ToggleIcon onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </ToggleIcon>
+            </PasswordWrapper>
+          </FormGroup>
+
+          {error && (
+            <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>
+          )}
+
+          <RegisterButton
+            type="submit"
+            disabled={!username || !password || !confirmPassword}
+          >
             Register
           </RegisterButton>
         </RegisterForm>

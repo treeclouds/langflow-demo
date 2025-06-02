@@ -8,7 +8,7 @@ const UserChat = () => {
    const navigate = useNavigate();
 
    useEffect(() => {
-    const storedData = localStorage.getItem("personal_data");
+    const storedData =  JSON.parse(localStorage.getItem("personal_data"));
 
     if (!storedData) {
       navigate("/login");
@@ -16,9 +16,8 @@ const UserChat = () => {
     }
 
     // Adjust this based on how you store user ID in localStorage
-    if (storedData !== id) {
+    if (storedData.username !== id) {
       navigate("/forbidden");
-      localStorage.clear();
     }
   }, [id, navigate]);
   return (

@@ -47,7 +47,7 @@ app.post("/login", async (req, res) => {
     return res.status(401).json({ message: "❌ Invalid password" });
   }
 
-  const token = jwt.sign({ username: user.username }, SECRET_KEY, { expiresIn: "1h" });
+  const token = jwt.sign({ username: user.username, role:user.role }, SECRET_KEY, { expiresIn: "1h" });
 
   // Optional: set cookie
   res.cookie("token_user_key", token, {
@@ -69,7 +69,7 @@ app.get("/me", (req, res) => {
 
   try {
     const user = jwt.verify(token, SECRET_KEY);
-    res.json({ username: user.username });
+    res.json({ username: user.username, role: user.role });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Session expired, please login again." });
@@ -85,7 +85,7 @@ app.post("/logout", (req, res) => {
 });
 app.get("/users", (req, res) => {
   try {
-    const users = db.prepare("SELECT username FROM users").all();
+    const users = db.prepare("SELECT id, username, role FROM users").all();
     res.json(users);
   } catch (err) {
     console.error("❌ Error fetching users:", err.message);

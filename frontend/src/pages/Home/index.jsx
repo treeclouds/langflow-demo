@@ -29,10 +29,10 @@ const HomePage = () => {
     }
   };
 
-  const userInfo = localStorage.getItem("personal_data");
+  const userInfo = JSON.parse(localStorage.getItem("personal_data"));
   const goToUserPage = () => {
-    if (!userInfo.trim()) return;
-    window.open(`/user/${encodeURIComponent(userInfo.trim())}`, "_blank");
+    if (!userInfo.username) return;
+    window.open(`/user/${userInfo.username}`, "_blank");
   };
 
   const openAdminPage = () => {
@@ -55,17 +55,22 @@ const HomePage = () => {
           <ShortcutCard onClick={openSummaryPage}>Summarize PDF</ShortcutCard>
         </Section>
 
+      {userInfo.role=== "admin" ? 
+      
         <Section>
           <SectionTitle>Admin Page</SectionTitle>
           <ShortcutCard onClick={openAdminPage}>Go to Admin Page</ShortcutCard>
         </Section>
-
-        <Section>
+      
+      :  <Section>
           <SectionTitle>User Chat</SectionTitle>
           <CardContainer>
             <ShortcutCard onClick={goToUserPage}>Go to User Page</ShortcutCard>
           </CardContainer>
         </Section>
+        }
+
+      
       </ShortcutWrapper>
     </PageWrapper>
   );

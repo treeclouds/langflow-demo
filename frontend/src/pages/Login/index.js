@@ -64,12 +64,11 @@ const handleSubmit = async (e) => {
     // 4. Store user info
     // Assuming your /me API returns { username: '...' } or { message: 'You are logged in as username' }
     // Adjust this according to your API response
-    let usernameFromMe = meData.username;
+    let usernameFromMe = meData;
     if (!usernameFromMe && meData.message) {
       usernameFromMe = meData.message.replace("You are logged in as ", "");
     }
-    localStorage.setItem("personal_data", usernameFromMe);
-
+   localStorage.setItem("personal_data", JSON.stringify(meData));
     // 5. Navigate to the original or default page
     const from = location.state?.from?.pathname || "/home";
     navigate(from, { replace: true });
