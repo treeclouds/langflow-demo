@@ -45,7 +45,6 @@ export const Bubble = styled.div`
     }
   }
 `;
-
 export const Form = styled.form`
   display: flex;
   padding: 1rem;
@@ -53,10 +52,18 @@ export const Form = styled.form`
   background: #fff;
   align-items: center;
   gap: 0.5rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 export const Input = styled.input`
   flex: 1;
+  min-width: 0; /* ✨ This allows shrinking inside flex containers */
+  width: 100%;
+  box-sizing: border-box; /* ensures padding/border don't cause overflow */
   padding: 0.75rem 1rem;
   border: 1px solid #ccc;
   border-radius: 24px;
@@ -89,12 +96,31 @@ export const Button = styled.button`
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+`;
+
+// You can use a new wrapper for the Switch
+export const SwitchWrapper = styled.div`
+  flex-shrink: 0;
+
+  @media (max-width: 480px) {
+    order: -1;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
 `;
 
 export const Layout = styled.div`
   display: flex;
   height: 100vh;
   background-color: #f5f7fa;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 export const Sidebar = styled.div`
@@ -124,6 +150,11 @@ export const MainContent = styled.div`
   padding: 1rem;
   display: flex;
   flex-direction: column;
+  order: 1; // Comes first on mobile
+
+  @media (min-width: 769px) {
+    order: 0; // Default for desktop
+  }
 `;
 
 export const RoomSummaryContainer = styled.div`
@@ -151,6 +182,15 @@ export const RightPanel = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    order: 2;
+  }
+
+  @media (min-width: 769px) {
+    order: 0; // Normal position on desktop
+  }
 `;
 
 export const EmotionStatus = styled.div`

@@ -17,6 +17,7 @@ import {
   Button,
   RightPanel,
   EmotionStatus,
+  SwitchWrapper,
 } from "./element";
 import RoomSummary from "./summary";
 
@@ -250,7 +251,7 @@ const AdminViewer = () => {
             onChange={handleInputChange}
             disabled={!selectedRoom}
           />
-          <div>
+          <SwitchWrapper>
             <Switch
               checked={interruptState[selectedRoom] || false}
               onChange={handleInterruptToggle}
@@ -259,7 +260,7 @@ const AdminViewer = () => {
               uncheckedIcon={false}
               checkedIcon={false}
             />
-          </div>
+          </SwitchWrapper>
           <Button type="submit" disabled={!selectedRoom}>
             Send
           </Button>
