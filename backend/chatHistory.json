@@ -1,0 +1,30 @@
+{
+  "nix": [
+    {
+      "from": "user",
+      "text": "who create harry potter?",
+      "roomId": "nix",
+      "timestamp": "2025-06-09T07:56:39.337Z"
+    },
+    {
+      "from": "ai",
+      "text": "The **Harry Potter** series was created by British author **J.K. Rowling**. The first book, *Harry Potter and the Philosopher's Stone* (titled *Harry Potter and the Sorcerer's Stone* in the U.S.), was published in 1997. The series follows the journey of a young wizard, Harry Potter, as he attends Hogwarts School of Witchcraft and Wizardry and battles the dark wizard Voldemort.\n\nThe series consists of seven books and has become one of the best-selling book series in history, leading to a successful film franchise, merchandise, and a significant cultural impact worldwide. J.K. Rowling's work has inspired millions of readers and has contributed to the popularity of fantasy literature.",
+      "emotion": "Neutral",
+      "roomId": "nix",
+      "timestamp": "2025-06-09T07:56:46.882Z"
+    },
+    {
+      "from": "user",
+      "text": "what is 1-2?",
+      "roomId": "nix",
+      "timestamp": "2025-06-09T07:57:31.762Z"
+    },
+    {
+      "from": "ai",
+      "text": "The result of \\(1 - 2\\) is \\(-1\\). If you have any more questions or need further assistance, feel free to ask!",
+      "emotion": "Confused",
+      "roomId": "nix",
+      "timestamp": "2025-06-09T07:57:36.134Z"
+    }
+  ]
+}
