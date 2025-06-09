@@ -9,35 +9,75 @@ const db = require("./db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const { AccessToken } = require("livekit-server-sdk");
 
 const SECRET_KEY = process.env.JWT_SECRET || "default_fallback_secret";
 
-app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
-  credentials: true,
-  methods: ["GET", "POST"]
-}));
+const apiKey = process.env.LIVEKIT_API_KEY;
+const apiSecret = process.env.LIVEKIT_API_SECRET;
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST"],
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
 
+app.post("/api/token", async (req, res) => {
+  const { identity, room } = req.body;
+
+  if (!identity || !room) {
+    return res.status(400).json({ error: "Missing identity or room" });
+  }
+
+  const token = new AccessToken(
+    process.env.LIVEKIT_API_KEY,
+    process.env.LIVEKIT_API_SECRET,
+    { identity }
+  );
+
+  token.addGrant({
+    roomJoin: true,
+    room,
+  });
+
+  try {
+    const jwt = await token.toJwt(); // ✅ this is now async
+    res.json({ token: jwt });
+  } catch (error) {
+    console.error("Failed to generate JWT:", error);
+    res.status(500).json({ error: "Token generation failed" });
+  }
+});
+
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
-  const existingUser = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+  const existingUser = db
+    .prepare("SELECT * FROM users WHERE username = ?")
+    .get(username);
   if (existingUser) {
     return res.status(400).json({ message: "Username already taken!" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  db.prepare("INSERT INTO users (username, password) VALUES (?, ?)").run(username, hashedPassword);
+  db.prepare("INSERT INTO users (username, password) VALUES (?, ?)").run(
+    username,
+    hashedPassword
+  );
 
   res.json({ message: "✅ Registered successfully!" });
 });
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+  const user = db
+    .prepare("SELECT * FROM users WHERE username = ?")
+    .get(username);
   if (!user) {
     return res.status(401).json({ message: "❌ User not found" });
   }
@@ -47,7 +87,11 @@ app.post("/login", async (req, res) => {
     return res.status(401).json({ message: "❌ Invalid password" });
   }
 
-  const token = jwt.sign({ username: user.username, role:user.role }, SECRET_KEY, { expiresIn: "1h" });
+  const token = jwt.sign(
+    { username: user.username, role: user.role },
+    SECRET_KEY,
+    { expiresIn: "1h" }
+  );
 
   // Optional: set cookie
   res.cookie("token_user_key", token, {
@@ -72,15 +116,16 @@ app.get("/me", (req, res) => {
     res.json({ username: user.username, role: user.role });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Session expired, please login again." });
+      return res
+        .status(401)
+        .json({ message: "Session expired, please login again." });
     }
     return res.status(401).json({ message: "Invalid token" });
   }
 });
 
-
 app.post("/logout", (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token_user_key");
   res.json({ message: "✅ Logged out successfully!" });
 });
 app.get("/users", (req, res) => {
